@@ -10,16 +10,16 @@ class BalloonManager():
         self.window = window
         self.rect = rect
         self.max_balloon_number = max_balloon_number
+
         self.balloon_list = []
+        self.score = 0
 
     def add(self):
         if len(self.balloon_list) < self.max_balloon_number:
-            balloon = Balloon(self.window, self.rect)
+            color = pygame.Color(random.randint(0, 256), random.randint(0, 256),random.randint(0, 256))
+            balloon = Balloon(self.window, self.rect, color)
             self.balloon_list.append(balloon)
-
-            
-
-        
+      
 #         self.nPopped = 0
 #         self.nMissed = 0
 #         self.score = 0
@@ -30,6 +30,9 @@ class BalloonManager():
             for balloon_item in reversed(self.balloon_list):
                 if balloon_item.check_click(event.pos):
                     self.balloon_list.remove(balloon_item)
+                    self.score = self.score + balloon_item.score
+                    print (self.score)
+                    break
 #                 wasHit, nPoints = oBalloon.clickedInside(event.pos)
 #                 if wasHit:
 #                     if nPoints > 0: # remove this balloon
@@ -39,8 +42,12 @@ class BalloonManager():
 #                     return # no need to check others
 
     def update(self):
-        for balloon_item in self.balloon_list:
+        for balloon_item in reversed(self.balloon_list):
             balloon_item.update()
+            if balloon_item.state != State.INSIDE:
+                self.balloon_list.remove(balloon_item)
+                self.score = self.score - balloon_item.score
+                print (self.score)
 
             # status = oBalloon.update()
             # if status == BALLOON_MISSED:
@@ -58,5 +65,5 @@ class BalloonManager():
 #         return self.nMissed
 
     def draw(self):
-        for balloon_item in self.balloon_list:
+        for balloon_item in reversed(self.balloon_list):
             balloon_item.draw()
